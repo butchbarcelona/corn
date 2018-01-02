@@ -45,4 +45,6 @@ dependencies {
 
     compile ('com.dji:dji-sdk:4.4.1')
     provided ('com.dji:dji-sdk-provided:4.4.1')
+
+    compile 'com.android.support:palette-v7:24.2.1'
 }

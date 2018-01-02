@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    tools:context="com.perpetual.corn.MainActivity"
-    android:background="@color/colorPrimary">
-
-
-    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true"
         >
     <ImageView
         android:id="@+id/imageView"
@@ -22,4 +17,3 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
     </RelativeLayout>
-</android.support.constraint.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.perpetual.corn;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -33,14 +35,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import dji.common.error.DJIError;
 import dji.common.error.DJISDKError;
+import dji.common.realname.AircraftBindingState;
+import dji.common.realname.AppActivationState;
 import dji.sdk.base.BaseComponent;
 import dji.sdk.base.BaseProduct;
+import dji.sdk.realname.AppActivationManager;
 import dji.sdk.sdkmanager.DJISDKManager;
 
 public class MainNavActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     FragmentManager fragmentManager;
+    ImageButton imgBtnConn;
+
+    private AppActivationManager appActivationManager;
+    private AppActivationState.AppActivationStateListener activationStateListener;
+    private AircraftBindingState.AircraftBindingStateListener bindingStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +62,33 @@ public class MainNavActivity extends AppCompatActivity
             checkAndRequestPermissions();
         }
         setContentView(R.layout.activity_main_nav);
+        //setContentView(R.layout.activity_main);
         //Initialize DJI SDK Manager
         mHandler = new Handler(Looper.getMainLooper());
 
 
     }
 
+    private void initData(){
+        setUpListener();
+        imgBtnConn = (ImageButton) findViewById(R.id.imgbtn_connection);
+        appActivationManager = DJISDKManager.getInstance().getAppActivationManager();
+        if (appActivationManager != null) {
+            appActivationManager.addAppActivationStateListener(activationStateListener);
+            appActivationManager.addAircraftBindingStateListener(bindingStateListener);
+            MainNavActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("DJICORN","initData " + appActivationManager.getAppActivationState());
+                    Log.d("DJICORN","initData " + appActivationManager.getAircraftBindingState());
+                }
+            });
+        }
+    }
+
     public void initUI(){
 
+        //setContentView(R.layout.activity_main_nav);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -72,10 +101,72 @@ public class MainNavActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
         fragmentManager = getSupportFragmentManager();
 
+        initData();
+    }
+    private void setUpListener() {
+        // Example of Listener
+        activationStateListener = new AppActivationState.AppActivationStateListener() {
+            @Override
+            public void onUpdate(final AppActivationState appActivationState) {
+                MainNavActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("DJICORN"," activationStateListener onUpdate" + appActivationState);
+
+                        if(appActivationState == AppActivationState.ACTIVATED) {
+                            imgBtnConn.setImageDrawable(getDrawable(R.drawable.radio_unchecked));
+                        }else{
+                            imgBtnConn.setImageDrawable(getDrawable(R.drawable.radio_checked));
+                        }
+                    }
+                });
+            }
+        };
+        bindingStateListener = new AircraftBindingState.AircraftBindingStateListener() {
+            @Override
+            public void onUpdate(final AircraftBindingState bindingState) {
+                MainNavActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("DJICORN"," bindingStateListener onUpdate" + bindingState);
+                    }
+                });
+            }
+        };
+    }
+    private void tearDownListener() {
+        if (activationStateListener != null) {
+            appActivationManager.removeAppActivationStateListener(activationStateListener);
+            MainNavActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("DJICORN","Unknown");
+                }
+            });
+        }
+        if (bindingStateListener !=null) {
+            appActivationManager.removeAircraftBindingStateListener(bindingStateListener);
+            MainNavActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("DJICORN","Unknown");
+                }
+            });
+        }
+    }
+    @Override
+    public void onResume() {
+        Log.e(TAG, "onResume");
+        setUpListener();
+        super.onResume();
+    }
+    @Override
+    protected void onDestroy() {
+        Log.e(TAG, "onDestroy");
+        tearDownListener();
+        super.onDestroy();
     }
 
 
@@ -87,7 +178,7 @@ public class MainNavActivity extends AppCompatActivity
                 fragmentClass = ConnectionFrag.class;
                 break;
             case R.id.nav_conn:
-                fragmentClass = ConnectionFrag.class;
+                fragmentClass = VideoFeederFrag.class;
                 break;
             case R.id.nav_history:
                 fragmentClass = ConnectionFrag.class;
@@ -96,7 +187,7 @@ public class MainNavActivity extends AppCompatActivity
                 fragmentClass = ConnectionFrag.class;
                 break;
             default:
-                fragmentClass = ConnectionFrag.class;
+                fragmentClass = VideoFeederFrag.class;
         }
 
         try {
@@ -237,7 +328,6 @@ public class MainNavActivity extends AppCompatActivity
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-
                                         initUI();
                                     }
                                 });

@@ -2,6 +2,8 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
@@ -9,10 +11,23 @@
     tools:context="com.perpetual.corn.MainNavActivity"
     tools:showIn="@layout/app_bar_main_nav">
     <!-- The main content view where fragments are loaded -->
+
+    <ImageButton
+        android:id="@+id/imgbtn_connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/radio_checked"
+        android:background="@android:color/transparent"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="339dp" />
     <FrameLayout
         android:id="@+id/main_content_frag"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="368dp"
+        android:layout_height="495dp"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp" >
+
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
