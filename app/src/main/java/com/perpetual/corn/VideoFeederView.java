@@ -2,6 +2,7 @@ package com.perpetual.corn;
 
 import android.app.Service;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -83,6 +84,10 @@ public class VideoFeederView extends LinearLayout
         primaryVideoFeed.setCoverView(primaryCoverView);
         disableAllButtons();
         initEXTSwitch();
+    }
+
+    public Bitmap getBitmapView(){
+        return primaryVideoFeed.getBitmapView();
     }
 
     private void initAllKeys() {
